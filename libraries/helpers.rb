@@ -20,8 +20,7 @@ module Opscode
   module ChefClient
     # helper methods for use in chef-client recipe code
     module Helpers
-      include Chef::Mixin::Language if Chef::VERSION < '11.0.0'
-      include Chef::DSL::PlatformIntrospection if Chef::VERSION >= '11.0.0'
+      include Chef::DSL::PlatformIntrospection
 
       def wmi_property_from_query(wmi_property, wmi_query)
         @wmi = ::WIN32OLE.connect('winmgmts://')
@@ -52,7 +51,7 @@ module Opscode
           rescue Chef::Exceptions::ResourceNotFound
             directory node['chef_client'][dir] do
               recursive true
-              mode 00755 if dir == 'log_dir'
+              mode '755' if dir == 'log_dir'
               owner d_owner
               group node['root_group']
             end
@@ -98,7 +97,7 @@ module Opscode
           Chef::Log.debug 'Using chef-client bin from system path'
           chef_in_path
         else
-          fail "Could not locate the chef-client bin in any known path. Please set the proper path by overriding the node['chef_client']['bin'] attribute."
+          raise "Could not locate the chef-client bin in any known path. Please set the proper path by overriding the node['chef_client']['bin'] attribute."
         end
       end
     end
